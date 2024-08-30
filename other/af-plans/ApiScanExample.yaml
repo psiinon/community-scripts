@@ -1,0 +1,56 @@
+---
+# An API plan that will not do anything unless you add one or more suitable API definitions.
+# You need to define at least one graphql, openapi, or soap endpoint, then you can delete the API jobs that don't have one.
+env:
+  contexts:
+  - name: "Example"
+    urls:
+    - "${ZAP_TARGET}"
+    includePaths: []
+    excludePaths: []
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+  vars: {}
+jobs:
+- parameters:
+    scanOnlyInScope: true
+    enableTags: false
+  rules: []
+  name: "passiveScan-config"
+  type: "passiveScan-config"
+
+- type: "graphql"
+  parameters:
+    endpoint:           # String: the endpoint URL, default: null, no schema is imported
+    schemaUrl:          # String: URL pointing to a GraphQL Schema, default: null, import using introspection on endpoint
+    schemaFile:         # String: Local file path of a GraphQL Schema, default: null, import using schemaUrl
+
+- type: "openapi"
+  parameters:
+    apiFile:            # String: Local file containing the OpenAPI definition, default: null, no definition will be imported
+    apiUrl:             # String: URL containing the OpenAPI definition, default: null, no definition will be imported
+    targetUrl:          # String: URL which overrides the target defined in the definition, default: null, the target will not be overridden
+
+- type: soap
+  parameters:
+    wsdlFile:           # String: Local file path of the WSDL, default: null, no definition will be imported
+    wsdlUrl:            # String: URL pointing to the WSDL, default: null, no definition will be imported
+
+- parameters:
+  policyDefinition:
+    defaultStrength: "medium"
+    defaultThreshold: "medium"
+    rules: []
+  name: "activeScan"
+  type: "activeScan"
+- parameters: {}
+  name: "passiveScan-wait-pre-report"
+  type: "passiveScan-wait"
+- parameters:
+    template: "modern"
+    reportTitle: "ZAP Scanning Report"
+    reportDescription: ""
+  name: "report"
+  type: "report"
